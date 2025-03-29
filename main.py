@@ -12,12 +12,40 @@ FEATURES = [
 HOVER_BG = "#a87cdc"
 NORMAL_BG = "white"
 
+# Example song data only to help me Aaryan, will delete when I get the data from Spotify
+SONGS = [
+    {"title": "Happy Song", "artist": "Artist A", "genre": "Pop", "features": {"Danceability": "High", "Energy": "High", "Instrumentalness": "Low", "Valence": "High", "Loudness": "High"}},
+    {"title": "Chill Vibes", "artist": "Artist B", "genre": "Pop", "features": {"Danceability": "Medium", "Energy": "Low", "Instrumentalness": "Medium", "Valence": "Medium", "Loudness": "Low"}},
+    {"title": "Workout Anthem", "artist": "Artist C", "genre": "Hip-Hop", "features": {"Danceability": "High", "Energy": "High", "Instrumentalness": "Low", "Valence": "High", "Loudness": "High"}},
+    {"title": "Relaxing Tune", "artist": "Artist D", "genre": "Classical", "features": {"Danceability": "Low", "Energy": "Low", "Instrumentalness": "High", "Valence": "Low", "Loudness": "Low"}},
+    {"title": "Party Starter", "artist": "Artist E", "genre": "Electronic", "features": {"Danceability": "High", "Energy": "High", "Instrumentalness": "Low", "Valence": "High", "Loudness": "High"}},
+    {"title": "Melancholy Melody", "artist": "Artist F", "genre": "Indie", "features": {"Danceability": "Low", "Energy": "Medium", "Instrumentalness": "Medium", "Valence": "Low", "Loudness": "Medium"}}
+]
+#Graph Implentation
+class SongGraph:
+    def __init__(self):
+        self.graph = {}
+
+    def add_song(self, song_title, song_data):
+        if song_title not in self.graph:
+            self.graph[song_title] = {"data": song_data, "edges": []}
+
+    def add_edge(self, song1_title, song2_title):
+        if song1_title in self.graph and song2_title in self.graph:
+            self.graph[song1_title]["edges"].append(song2_title)
+            self.graph[song2_title]["edges"].append(song1_title)
+
+    def get_neighbors(self, song_title):
+        if song_title in self.graph:
+            return self.graph[song_title]["edges"]
+        return []
+
 class AuraTuneApp(tk.Tk):
     def __init__(self):
         super().__init__()
         self.title("AuraTune")
         self.attributes('-fullscreen', True)
-        self.configure(bg="#6a0dad")  # Purple background
+        self.configure(bg="#6a0dad")
 
         self.title_font = font.Font(family="Georgia", size=48, weight="bold")
         self.option_font = font.Font(family="Helvetica", size=28)
@@ -25,14 +53,34 @@ class AuraTuneApp(tk.Tk):
 
         self.current_step = 0
         self.user_choices = {}
+        self.song_graph = self.build_song_graph()
 
         self.container = tk.Frame(self, bg="#6a0dad")
         self.container.pack(fill="both", expand=True)
 
         self.show_intro()
 
-        # Bind Esc to exit fullscreen
         self.bind("<Escape>", lambda e: self.attributes("-fullscreen", False))
+#graph implementation
+    def build_song_graph(self):
+        graph = SongGraph()
+
+        for song in SONGS:
+            graph.add_song(song["title"], song)
+#Clusters similar songs by genre together 
+        for song1 in SONGS:
+            for song2 in SONGS:
+                if song1["title"] != song2["title"] and song1["genre"] == song2["genre"]:
+                    graph.add_edge(song1["title"], song2["title"])
+
+        return graph
+#matces songs based on features provided by USER
+    def recommend_song(self):
+        for song in SONGS:
+            match = all(song["features"][feature] == self.user_choices[feature] for feature in self.user_choices)
+            if match:
+                return song
+        return None
 
     def clear_container(self):
         for widget in self.container.winfo_children():
@@ -149,24 +197,35 @@ class AuraTuneApp(tk.Tk):
     def show_recommendation(self):
         self.clear_container()
 
+        recommended_song = self.recommend_song()
+
         inner = tk.Frame(self.container, bg="#6a0dad")
         inner.pack(expand=True)
 
-        tk.Label(
-            inner,
-            text="Recommended Music",
-            bg="#6a0dad",
-            fg="white",
-            font=self.title_font
-        ).pack(pady=40)
+        if recommended_song:
+            tk.Label(
+                inner,
+                text="Recommended Music",
+                bg="#6a0dad",
+                fg="white",
+                font=self.title_font
+            ).pack(pady=40)
 
-        tk.Label(
-            inner,
-            text="🎶 Music Name",
-            bg="#6a0dad",
-            fg="white",
-            font=self.option_font
-        ).pack(pady=20)
+            tk.Label(
+                inner,
+                text=f"🎶 {recommended_song['title']} by {recommended_song['artist']}",
+                bg="#6a0dad",
+                fg="white",
+                font=self.option_font
+            ).pack(pady=20)
+        else:
+            tk.Label(
+                inner,
+                text="No matching song found!",
+                bg="#6a0dad",
+                fg="white",
+                font=self.option_font
+            ).pack(pady=40)
 
         self.styled_button(inner, "Back to Start", self.show_intro)
 
