@@ -110,7 +110,7 @@ def build_graph_from_csv(filepath):
 
     for song1 in songs:
         for song2 in songs:
-            if song1["name"] != song2["name"] and any(genre in song1["genre"] for genre in song2["genre"]):
+            if song1["name"] != song2["name"] and song1["genre"] == song2["genre"]:
                 song_tree.add_edge(song1["name"], song2["name"])
 
     return song_tree
