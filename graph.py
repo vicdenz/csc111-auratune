@@ -78,14 +78,14 @@ def read_song_data(filepath):
     Reads song data from a CSV file and returns a list of dictionaries.
     """
     songs = []
-    try:
-        with open(filepath, mode='r', encoding='utf-8') as file:
+
+    with open(filepath, mode='r', encoding='utf-8') as file:
             reader = csv.DictReader(file)
             for row in reader:
                 song = {
                     "name": row["name"],
-                    "artists": row["artists"].split(", "),  # Assuming artists are comma-separated
-                    "genre": row["genre"].split(", "),  # Assuming genres are comma-separated
+                    "artists": row["artists"].split(", "),  
+                    "genre": row["genre"].split(", "),  
                     "danceability": float(row["danceability"]),
                     "energy": float(row["energy"]),
                     "instrumentalness": float(row["instrumentalness"]),
