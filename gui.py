@@ -13,16 +13,6 @@ FEATURES = [
 HOVER_BG = "#a87cdc"
 NORMAL_BG = "white"
 
-# Example song data only to help me Aaryan, will delete when I get the data from Spotify
-SONGS = [
-    {"title": "Happy Song", "artist": "Artist A", "genre": "Pop", "features": {"Danceability": "High", "Energy": "High", "Instrumentalness": "Low", "Valence": "High", "Loudness": "High"}},
-    {"title": "Chill Vibes", "artist": "Artist B", "genre": "Pop", "features": {"Danceability": "Medium", "Energy": "Low", "Instrumentalness": "Medium", "Valence": "Medium", "Loudness": "Low"}},
-    {"title": "Workout Anthem", "artist": "Artist C", "genre": "Hip-Hop", "features": {"Danceability": "High", "Energy": "High", "Instrumentalness": "Low", "Valence": "High", "Loudness": "High"}},
-    {"title": "Relaxing Tune", "artist": "Artist D", "genre": "Classical", "features": {"Danceability": "Low", "Energy": "Low", "Instrumentalness": "High", "Valence": "Low", "Loudness": "Low"}},
-    {"title": "Party Starter", "artist": "Artist E", "genre": "Electronic", "features": {"Danceability": "High", "Energy": "High", "Instrumentalness": "Low", "Valence": "High", "Loudness": "High"}},
-    {"title": "Melancholy Melody", "artist": "Artist F", "genre": "Indie", "features": {"Danceability": "Low", "Energy": "Medium", "Instrumentalness": "Medium", "Valence": "Low", "Loudness": "Medium"}}
-]
-
 class AuraTuneApp(tk.Tk):
     def __init__(self):
         super().__init__()
@@ -44,27 +34,6 @@ class AuraTuneApp(tk.Tk):
         self.show_intro()
 
         self.bind("<Escape>", lambda e: self.attributes("-fullscreen", False))
-#graph implementation
-    def build_song_graph(self):
-        graph = SongTree()
-
-        for song in SONGS:
-            graph.add_song(song["title"], song)
-#Clusters similar songs by genre together 
-        for song1 in SONGS:
-            for song2 in SONGS:
-                if song1["title"] != song2["title"] and song1["genre"] == song2["genre"]:
-                    graph.add_edge(song1["title"], song2["title"])
-
-        return graph
-#matces songs based on features provided by USER
-    def recommend_song(self):
-        for song in SONGS:
-            match = all(song["features"][feature] == self.user_choices[feature] for feature in self.user_choices)
-            if match:
-                return song
-        return None
-
     def clear_container(self):
         for widget in self.container.winfo_children():
             widget.destroy()
