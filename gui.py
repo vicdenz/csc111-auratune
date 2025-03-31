@@ -35,7 +35,7 @@ class GUIApp(tk.Tk):
     categories_selected: list[str]
     category_index: int
 
-    def __init__(self, song_dataset: pd.DataFrame, available_genres: list[str]):
+    def __init__(self, song_dataset: pd.DataFrame, available_genres: list[str]) -> None:
         """Initialize the graphical user interface of AuraTune"""
         super().__init__()
         self.song_dataset = song_dataset
@@ -71,17 +71,21 @@ class GUIApp(tk.Tk):
 
         self.show_home_page()
 
-    def clear_container(self):
+    def clear_container(self) -> None:
+        """Clears all widgets from the container frame"""
         for widget in self.container.winfo_children():
             widget.destroy()
 
-    def clear_user_selection(self):
+    def clear_user_selection(self) -> None:
+        """Resets the user's selection. Clears the selected genre, resets the list of selected categories, 
+        and sets the category index back to zero. Additionally, it clears the decision tree."""
         self.genre_selected = ''
         self.categories_selected = []
         self.category_index = 0
         self.genre_tree.clear_tree()
 
-    def styled_button(self, parent, text, command):
+    def styled_button(self, parent: tk.Widget, text: str, command: Callable) -> tk.Button:
+        """Creates and returns a styled button widget."""
         btn = tk.Button(
             parent, text=text, font=self.option_font,
             bg=self.text_color, fg=self.bg_color, width=20, height=2,
@@ -90,7 +94,8 @@ class GUIApp(tk.Tk):
         btn.pack(pady=20, ipadx=10, ipady=10)  # Add some padding inside the button
         return btn
 
-    def show_home_page(self):
+    def show_home_page(self) -> None:
+        """Displays the home page of AuraTune """
         self.clear_container()
         inner = tk.Frame(self.container, bg=self.bg_color)
         inner.pack(fill="both", expand=True)
@@ -99,7 +104,8 @@ class GUIApp(tk.Tk):
         self.styled_button(inner, "Search Songs", self.show_next_decision_page)
         self.styled_button(inner, "Info", self.show_info_page)
 
-    def show_info_page(self):
+    def show_info_page(self) -> None:
+        """Displays the information page of AuraTune"""
         self.clear_container()
 
         inner = tk.Frame(self.container, bg=self.bg_color)
@@ -113,7 +119,7 @@ class GUIApp(tk.Tk):
         # Back button
         self.styled_button(inner, "Back To Home", self.show_home_page)
 
-    def show_next_decision_page(self):
+    def show_next_decision_page(self) -> None:
         self.clear_container()
 
         if self.category_index == 0:

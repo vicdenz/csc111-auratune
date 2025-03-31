@@ -16,7 +16,8 @@ please consult our Course Syllabus.
 
 This file is Copyright (c) 2025 CSC111 Teaching Team
 """
-
+from dataclasses import dataclass, field
+from typing import Optional, Any
 import pandas as pd
 import numpy as np
 from const import CategoryLevel, SONG_CATEGORIES
@@ -46,6 +47,7 @@ def categorize_attribute(value: float, thresholds: list[float]) -> CategoryLevel
     else:
         return CategoryLevel.HIGH
 
+
 def compute_thresholds(song_dataset: pd.DataFrame, category: str) -> list[float]:
     """Compute threshold values for categorizing a song attribute.
 
@@ -55,7 +57,29 @@ def compute_thresholds(song_dataset: pd.DataFrame, category: str) -> list[float]
     """
     return np.percentile(song_dataset[category], [33, 66]).tolist()
 
+
+@dataclass
 class Song:
+    """Represents a song with various attributes categorized by intensity levels.
+
+    Instance Attributes:
+        name (str): The title of the song.
+        artists (list[str]): A list of artist names.
+        genre (str): The genre of the song.
+        danceability (CategoryLevel): The danceability category.
+        energy (CategoryLevel): The energy category.
+        instrumentalness (CategoryLevel): The instrumentalness category.
+        valence (CategoryLevel): The valence category.
+        loudness (CategoryLevel): The loudness category.
+        popularity (int): The popularity score of the song.
+
+    Representation Invariants:
+    - name must be a non-empty string.
+    - artists must be a non-empty list of strings.
+    - genre must be a non-empty string.
+    - danceability, energy, instrumentalness, valence, and loudness must be instances of CategoryLevel.
+    - popularity must be an integer (typically between 0 and 100).
+    """
     name: str
     artists: list[str]
     genre: str
@@ -66,19 +90,11 @@ class Song:
     loudness: CategoryLevel
     popularity: int
 
-    def __init__(self, name, artists, genre, danceability, energy, instrumentalness, valence, loudness, popularity):
-        self.name = name
-        self.artists = artists
-        self.genre = genre
-        self.danceability = danceability
-        self.energy = energy
-        self.instrumentalness = instrumentalness
-        self.valence = valence
-        self.loudness = loudness
-        self.popularity = popularity
-
     def __repr__(self):
-        return f"Song<Name: {self.name}, Artists: {";".join(self.artists)}, Genre: {self.genre}, Danceability: {self.danceability.name}, Energy: {self.energy.name}, Instrumentalness: {self.instrumentalness.name}, Valence: {self.valence.name}, Loudness: {self.loudness.name}, Popularity: {self.popularity}>"
+        return (f"Song<Name: {self.name}, Artists: {";".join(self.artists)}, Genre: {self.genre}, Danceability: " +
+                f"{self.danceability.name}, Energy: {self.energy.name}, Instrumentalness: " +
+                f"{self.instrumentalness.name}, Valence: {self.valence.name}, Loudness: " +
+                f"{self.loudness.name}, Popularity: {self.popularity}>")
 
 class SongDecisionTree:
     def __init__(self):
