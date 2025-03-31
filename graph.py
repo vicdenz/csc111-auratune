@@ -1,116 +1,60 @@
 import csv
+import numpy as np
+from const import CategoryLevel, SONG_CATEGORIES
 
-class SongNode:
+class Song:
     name: str
     artists: list[str]
-    genre: list[str]
-    danceability: int
-    energy: int
-    instrumentalness: int
-    valence: int
-    loudness: int
+    genre: str
+    danceability: CategoryLevel
+    energy: CategoryLevel
+    instrumentalness: CategoryLevel
+    valence: CategoryLevel
+    loudness: CategoryLevel
 
-    def __init__(self, song_data=None):
-        if song_data is None:
-            self.name = None
-            self.artists = None
-            self.genre = None
-            self.danceability = None
-            self.energy = None
-            self.instrumentalness = None
-            self.valence = None
-            self.loudness = None
-            self._left = None
-            self._right = None
-        else:
-            self.name = song_data['name']
-            self.artists = song_data['artists']
-            self.genre = song_data['genre']
-            self.danceability = song_data['danceability']
-            self.energy = song_data['energy']
-            self.instrumentalness = song_data['instrumentalness']
-            self.valence = song_data['valence']
-            self.loudness = song_data['loudness']
-            self._left = SongNode()
-            self._right = SongNode()
+    def __init__(self, name, artists, genre, danceability, energy, instrumentalness, valence, loudness):
+        self.name = name
+        self.artists = artists
+        self.genre = genre
+        self.danceability = danceability
+        self.energy = energy
+        self.instrumentalness = instrumentalness
+        self.valence = valence
+        self.loudness = loudness
 
+    def __repr__(self):
+        return f"Name: {self.name}, Artists: {";".join(self.artists)}, Genre: {self.genre}, Danceability: {self.danceability.name}, Energy: {self.energy.name}, Instrumentalness: {self.instrumentalness.name}, Valence: {self.valence.name}, Loudness: {self.loudness.name}"
 
-class SongTree:
+class SongDecisionTree:
     def __init__(self):
-        self.graph = {}
+        self.songs = []
+        self._subtrees = {}
 
-    def add_song(self, song_title, song_data):
-        """
-        Add a song as a node in the graph.
-        """
-        if song_title not in self.graph:
-            self.graph[song_title] = {"data": song_data, "edges": []}
+    def insert_song(self, song: Song, depth=0):
+        if depth == len(SONG_CATEGORIES):
+            self.songs.append(song)
+            return True
+        
+        song_category_level = getattr(song, SONG_CATEGORIES[depth], None)
+        if song_category_level not in self._subtrees:
+            self._subtrees[song_category_level] = SongDecisionTree()
+        self._subtrees[song_category_level].insert_song(song, depth + 1)
 
-    def add_edge(self, song1_title, song2_title):
-        """
-        Add an edge between two songs if they share a similar genre or features.
-        """
-        if song1_title in self.graph and song2_title in self.graph:
-            self.graph[song1_title]["edges"].append(song2_title)
-            self.graph[song2_title]["edges"].append(song1_title)
+        return False
 
-    def get_neighbors(self, song_title):
-        """
-        Get all neighboring songs connected to the given song.
-        """
-        if song_title in self.graph:
-            return self.graph[song_title]["edges"]
-        return []
+    def search_tree(self, song_categories, depth=0):
+        if depth == len(SONG_CATEGORIES):
+            return self.songs
 
-    def display_graph(self):
-        """
-        Print the graph structure for debugging.
-        """
-        for song, details in self.graph.items():
-            print(f"Song: {song}")
-            print(f"  Data: {details['data']}")
-            print(f"  Edges: {details['edges']}")
-            print()
+        if song_categories[depth] in self._subtrees:
+            return self._subtrees[song_categories[depth]].search_tree(song_categories, depth + 1)
+        else:
+            return []
 
+    def display_tree(self, depth=0):
+        if self.songs:
+            print("  " * depth + f"Songs: {[song.name for song in self.songs]}")
 
-def read_song_data(filepath):
-    """
-    Reads song data from a CSV file and returns a list of dictionaries.
-    """
-    songs = []
-
-    with open(filepath, mode='r', encoding='utf-8') as file:
-            reader = csv.DictReader(file)
-            for row in reader:
-                song = {
-                    "name": row["name"],
-                    "artists": row["artists"].split(", "),  
-                    "genre": row["genre"].split(", "),  
-                    "danceability": float(row["danceability"]),
-                    "energy": float(row["energy"]),
-                    "instrumentalness": float(row["instrumentalness"]),
-                    "valence": float(row["valence"]),
-                    "loudness": float(row["loudness"])
-                }
-                songs.append(song) 
-    return songs
-
-
-def build_graph_from_csv(filepath):
-    """
-    Reads song data from a CSV file and builds a SongTree graph.
-    """
-    songs = read_song_data(filepath)
-
-    song_tree = SongTree()
-
-    for song in songs:
-        song_node = SongNode(song)
-        song_tree.add_song(song_node.name, song_node)
-
-    for song1 in songs:
-        for song2 in songs:
-            if song1["name"] != song2["name"] and song1["genre"] == song2["genre"]:
-                song_tree.add_edge(song1["name"], song2["name"])
-
-    return song_tree
+        for category, subtree in self._subtrees.items():
+            print("  " * depth + f"{SONG_CATEGORIES[depth]}: {category.name}")
+            subtree.display_tree(depth + 1)

@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import font, messagebox
-from graph import SongGraph
+from graph import SongTree
 
 FEATURES = [
     ("Danceability", ["Low", "Medium", "High"]),
@@ -46,7 +46,7 @@ class AuraTuneApp(tk.Tk):
         self.bind("<Escape>", lambda e: self.attributes("-fullscreen", False))
 #graph implementation
     def build_song_graph(self):
-        graph = SongGraph()
+        graph = SongTree()
 
         for song in SONGS:
             graph.add_song(song["title"], song)
