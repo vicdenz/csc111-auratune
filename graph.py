@@ -98,17 +98,24 @@ class Song:
 
 class SongDecisionTree:
     def __init__(self):
+        """Initialize an empty SongDecisionTree with no songs and no subtrees."""
         self.songs = []
         self._subtrees = {}
 
     def is_empty(self):
+        """Return True if the tree has no songs and no subtrees, False otherwise."""
         return not (self.songs or self._subtrees)
 
     def clear_tree(self):
+        """Clear the entire tree, removing all songs and subtrees."""
         self.songs = []
         self._subtrees = {}
 
     def insert_song(self, song: Song, depth=0):
+        """Insert a song (from the parameter) into the decision tree based on its categorized attributes.
+        THe depth represent the current depth in the tree.
+        Return true if the song was added to a leaf node, False otherwise.
+        """
         if depth == len(SONG_CATEGORIES):
             self.songs.append(song)
             return True
@@ -121,6 +128,11 @@ class SongDecisionTree:
         return False
 
     def search_tree(self, song_categories, sort_by_popularity=True, depth=0):
+        """Search the tree using a list of category levels, which is song_categories and return a list of matching songs.
+        sort_by_popularity represents whether to sort the resulting songs by popularity.
+        depth is the current depth in the tree.
+        Return a list of song objects matching the category path.
+        """
         if depth == len(SONG_CATEGORIES):
             if sort_by_popularity:
                 return self.songs #sorted(self.songs, key=lambda song: song.popularity)
@@ -133,6 +145,7 @@ class SongDecisionTree:
             return []
 
     def display_tree(self, depth=0):
+        """Print a visual representation of the tree structure, showing songs and branching by category levels."""
         if self.songs:
             print("  " * depth + f"Songs: {[song.name for song in self.songs]}")
 
@@ -141,6 +154,10 @@ class SongDecisionTree:
             subtree.display_tree(depth + 1)
 
     def build_genre_tree(self, song_dataset, chosen_genre):
+        """Build the decision tree using songs of a specific genre from the dataset, which is song_dataset.
+        chosen_genre is the genre to filter and build the tree from.
+        Return nothing.
+        """
         genre_songs = get_songs_by_genre(song_dataset, chosen_genre)  # Get songs with the chosen_genre
 
         if not genre_songs.empty:
