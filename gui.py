@@ -23,6 +23,7 @@ from typing import Callable
 from graph import SongDecisionTree
 from const import SONG_CATEGORIES, CategoryLevel
 
+
 class GUIApp(tk.Tk):
     """
      A graphical user interface (GUI) application for interacting with a song recommendation system.
@@ -132,7 +133,10 @@ class GUIApp(tk.Tk):
 
         # Display info content
         tk.Label(inner, text="About AuraTune", bg=self.bg_color, fg="white", font=self.title_font).pack(pady=40)
-        info_text = "AuraTune recommends music based on your genre and song attribute preferences.\n\nWe use a variety of factors like danceability, energy, and more to suggest songs that fit your mood."
+        info_text = (
+            "AuraTune recommends music based on your genre and song attribute preferences.\n\nWe use a variety "
+            "of factors like danceability, energy, and more to suggest songs that fit your mood."
+        )
         tk.Label(inner, text=info_text, bg=self.bg_color, fg="white", font=self.text_font, wraplength=500).pack(pady=20)
 
         # Back button
@@ -247,6 +251,7 @@ class GUIApp(tk.Tk):
     def window_resize_event(self, event) -> None:
         """Adjusts the window's size and position based on the new screen dimensions when the window is resized."""
         self.set_window_geometry()
+
 
 if __name__ == "__main__":
     # pass
