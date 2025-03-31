@@ -1,6 +1,5 @@
 """CSC111 Project 2: Auratune - Global Constants
 
-Instructions (READ THIS FIRST!)
 ===============================
 
 This Python module contains global variables used throughout the project.

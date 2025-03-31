@@ -1,6 +1,25 @@
+"""CSC111 Project 2: Auratune - Graphical User Interface
+
+===============================
+
+This Python module contains the GUI object, to be imported and used by the `main` module.
+
+Copyright and Usage Information
+===============================
+
+This file is provided solely for the personal and private use of students
+taking CSC111 at the University of Toronto St. George campus. All forms of
+distribution of this code, whether as given or with any changes, are
+expressly prohibited. For more information on copyright for CSC111 materials,
+please consult our Course Syllabus.
+
+This file is Copyright (c) 2025 CSC111 Teaching Team
+"""
+
 import pandas as pd
 import tkinter as tk
 from tkinter import font
+from typing import Callable
 from graph import SongDecisionTree
 from const import SONG_CATEGORIES, CategoryLevel
 
@@ -77,7 +96,7 @@ class GUIApp(tk.Tk):
             widget.destroy()
 
     def clear_user_selection(self) -> None:
-        """Resets the user's selection. Clears the selected genre, resets the list of selected categories, 
+        """Resets the user's selection. Clears the selected genre, resets the list of selected categories,
         and sets the category index back to zero. Additionally, it clears the decision tree."""
         self.genre_selected = ''
         self.categories_selected = []
@@ -120,6 +139,7 @@ class GUIApp(tk.Tk):
         self.styled_button(inner, "Back To Home", self.show_home_page)
 
     def show_next_decision_page(self) -> None:
+        """Displays the next decision-making page"""
         self.clear_container()
 
         if self.category_index == 0:
@@ -133,7 +153,8 @@ class GUIApp(tk.Tk):
 
         self.category_index += 1
 
-    def show_songs_page(self):
+    def show_songs_page(self) -> None:
+        """Displays the recommended songs"""
         self.clear_container()
 
         inner = tk.Frame(self.container, bg=self.bg_color)
@@ -152,7 +173,10 @@ class GUIApp(tk.Tk):
         # Back button
         self.styled_button(inner, "Back To Home", self.show_home_page)
 
-    def _select_dropdown(self, title, options):
+    def _select_dropdown(self, title: str, options: list[str]) -> None:
+        """Displays a dropdown menu for selecting genres. The user can select
+        a genre or category. When user clicks next, it saves the genre with _save_genre.
+        """
         inner = tk.Frame(self.container, bg=self.bg_color)
         inner.pack(fill="both", expand=True)
 
@@ -168,7 +192,10 @@ class GUIApp(tk.Tk):
 
         self.styled_button(inner, "Next", lambda: self._save_genre(var.get()))
 
-    def _select_button_row(self, title, options):
+    def _select_button_row(self, title: str, options: list[str]) -> None:
+        """Displays a row of buttons for selecting an option.
+        When a button is clicked, the corresponding option is saved with _save_category.
+        """
         inner = tk.Frame(self.container, bg=self.bg_color)
         inner.pack(fill="both", expand=True)
 
@@ -189,16 +216,26 @@ class GUIApp(tk.Tk):
         tk.Label(inner, text=f"Step {self.category_index + 1} of {len(SONG_CATEGORIES) + 1}",
                  bg=self.bg_color, fg="white", font=self.text_font).pack(pady=10)
 
-    def _save_genre(self, genre):
+    def _save_genre(self, genre: str) -> None:
+        """Saves the selected genre and updates the genre tree.
+        Then, it proceeds to the next page.
+        """
         self.genre_selected = genre.lower()
         self.genre_tree.build_genre_tree(self.song_dataset, self.genre_selected)
         self.show_next_decision_page()
 
-    def _save_category(self, category):
+    def _save_category(self, category: str) -> None:
+        """Saves the selected category andn updates the categories selected list.
+        Then, it proceeds to the next page.
+        """
         self.categories_selected.append(CategoryLevel[category.upper()])
         self.show_next_decision_page()
 
-    def set_window_geometry(self):
+    def set_window_geometry(self) -> None:
+        """Sets the geometry of the window to be centered on the screen.
+        Calculates the screen's width and height, then sets the application
+        window size to two-thirds of the screen's width and height.
+        """
         screen_width = self.winfo_screenwidth()
         screen_height = self.winfo_screenheight()
         window_width = int(screen_width / 3) * 2
@@ -207,5 +244,17 @@ class GUIApp(tk.Tk):
         # Set window size and position it at the center
         self.geometry(f"{window_width}x{window_height}+{int((screen_width - window_width) / 2)}+{int((screen_height - window_height) / 2)}")
 
-    def window_resize_event(self, event):
+    def window_resize_event(self, event) -> None:
+        """Adjusts the window's size and position based on the new screen dimensions when the window is resized."""
         self.set_window_geometry()
+
+if __name__ == "__main__":
+    # pass
+    # When you are ready to check your work with python_ta, uncomment the following lines.
+    # (Delete the "#" and space before each line.)
+    # IMPORTANT: keep this code indented inside the "if __name__ == '__main__'" block
+    import python_ta
+    python_ta.check_all(config={
+        'max-line-length': 120,
+        'disable': ['R1705', 'E9998', 'E9999']
+    })

@@ -1,6 +1,5 @@
 """CSC111 Project 2: Auratune - Genre Decision Tree
 
-Instructions (READ THIS FIRST!)
 ===============================
 
 This Python module contains the Song dataclass and SongDecisionTree class, to be imported and used by the `gui` module.
