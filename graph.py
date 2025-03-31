@@ -1,19 +1,59 @@
+"""CSC111 Project 2: Auratune - Genre Decision Tree
+
+Instructions (READ THIS FIRST!)
+===============================
+
+This Python module contains the Song dataclass and SongDecisionTree class, to be imported and used by the `gui` module.
+
+Copyright and Usage Information
+===============================
+
+This file is provided solely for the personal and private use of students
+taking CSC111 at the University of Toronto St. George campus. All forms of
+distribution of this code, whether as given or with any changes, are
+expressly prohibited. For more information on copyright for CSC111 materials,
+please consult our Course Syllabus.
+
+This file is Copyright (c) 2025 CSC111 Teaching Team
+"""
+
+import pandas as pd
 import numpy as np
 from const import CategoryLevel, SONG_CATEGORIES
 
-def get_songs_by_genre(song_dataset, chosen_genre):
+
+def get_songs_by_genre(song_dataset: pd.DataFrame, chosen_genre: str) -> pd.DataFrame:
+    """Filter songs by the given genre and returns a pd.DataFrame with the filtered songs.
+
+    Representation Invariants:
+    - song_dataset must be a pandas DataFrame containing a 'track_genre' column.
+    - chosen_genre must be a string representing a valid genre in song_dataset.
+    """
     return song_dataset[song_dataset['track_genre'] == chosen_genre]
 
-def categorize_attribute(value, thresholds):
-	if value <= thresholds[0]:
-		return CategoryLevel.LOW
-	elif value <= thresholds[1]:
-		return CategoryLevel.MEDIUM
-	else:
-		return CategoryLevel.HIGH
 
-def compute_thresholds(song_dataset, category):
-	return np.percentile(song_dataset[category], [33, 66])
+def categorize_attribute(value: float, thresholds: list[float]) -> CategoryLevel:
+    """Categorize a numerical attribute based on threshold values and returns the corresponding CategoryLevel enum.
+
+    Representation Invariants:
+    - value must be a float.
+    - thresholds must be a list of exactly two float values in ascending order: [low_threshold, high_threshold].
+    """
+    if value <= thresholds[0]:
+        return CategoryLevel.LOW
+    elif value <= thresholds[1]:
+        return CategoryLevel.MEDIUM
+    else:
+        return CategoryLevel.HIGH
+
+def compute_thresholds(song_dataset: pd.DataFrame, category: str) -> list[float]:
+    """Compute threshold values for categorizing a song attribute.
+
+    Representation Invariants:
+    - song_dataset must be a pandas DataFrame containing numeric values for the given category.
+    - category must be a string corresponding to a valid column in song_dataset.
+    """
+    return np.percentile(song_dataset[category], [33, 66]).tolist()
 
 class Song:
     name: str
@@ -56,7 +96,7 @@ class SongDecisionTree:
         if depth == len(SONG_CATEGORIES):
             self.songs.append(song)
             return True
-        
+
         song_category_level = getattr(song, SONG_CATEGORIES[depth], None)
         if song_category_level not in self._subtrees:
             self._subtrees[song_category_level] = SongDecisionTree()
@@ -101,3 +141,15 @@ class SongDecisionTree:
                     song_data[category] = categorize_attribute(row[category], genre_category_thresholds[category])
 
                 self.insert_song(Song(**song_data))
+
+
+if __name__ == "__main__":
+    # pass
+    # When you are ready to check your work with python_ta, uncomment the following lines.
+    # (Delete the "#" and space before each line.)
+    # IMPORTANT: keep this code indented inside the "if __name__ == '__main__'" block
+    import python_ta
+    python_ta.check_all(config={
+        'max-line-length': 120,
+        'disable': ['R1705', 'E9998', 'E9999']
+    })

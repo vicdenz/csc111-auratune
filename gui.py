@@ -1,11 +1,42 @@
+import pandas as pd
 import tkinter as tk
 from tkinter import font
 from graph import SongDecisionTree
 from const import SONG_CATEGORIES, CategoryLevel
 
 class GUIApp(tk.Tk):
-    
-    def __init__(self, song_dataset, available_genres):
+    """
+     A graphical user interface (GUI) application for interacting with a song recommendation system.
+
+     Instance Attributes:
+        song_dataset (pd.DataFrame): A dataset containing song information, including features and genres.
+        genre_tree (SongDecisionTree): A decision tree model used for genre classification and recommendations.
+        available_genres (list[str]): A list of genres available in the dataset for user selection.
+        max_songs_found (int): The maximum number of songs retrieved from the dataset.
+        genre_selected (str): The currently selected genre by the user.
+        categories_selected (list[str]): A list of selected categories/features for filtering songs.
+        category_index (int): The index representing the current category being processed.
+
+
+    Representation Invariants:
+        - song_dataset must be a non-empty pandas DataFrame with valid song data.
+        - available_genres must be a non-empty list of unique strings.
+        - All genres in available_genres must be present in song_dataset.
+        - 0 < max_songs_found
+        - genre_selected must be either an empty string or a string present in available_genres.
+        - categories_selected must be a list of strings, each corresponding to valid category names.
+        - 0 <= category_index <= len(SONG_CATEGORIES)
+    """
+    song_dataset: pd.DataFrame
+    genre_tree: SongDecisionTree
+    available_genres: list[str]
+    max_songs_found: int
+    genre_selected: str
+    categories_selected: list[str]
+    category_index: int
+
+    def __init__(self, song_dataset: pd.DataFrame, available_genres: list[str]):
+        """Initialize the graphical user interface of AuraTune"""
         super().__init__()
         self.song_dataset = song_dataset
         self.genre_tree = SongDecisionTree()
@@ -70,7 +101,7 @@ class GUIApp(tk.Tk):
 
     def show_info_page(self):
         self.clear_container()
-        
+
         inner = tk.Frame(self.container, bg=self.bg_color)
         inner.pack(fill="both", expand=True)
 
@@ -98,7 +129,7 @@ class GUIApp(tk.Tk):
 
     def show_songs_page(self):
         self.clear_container()
-        
+
         inner = tk.Frame(self.container, bg=self.bg_color)
         inner.pack(fill="both", expand=True)
 
