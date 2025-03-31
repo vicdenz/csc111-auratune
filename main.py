@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 from graph import Song, SongDecisionTree
 from const import SONG_DATA_FILE, CategoryLevel, SONG_CATEGORIES
-# from gui import AuraTuneApp
+from gui import AuraTuneApp
 
 def get_available_genres(song_dataset):
     return set(song_dataset['track_genre'].unique())
@@ -58,5 +58,5 @@ if __name__ == "__main__":
                 print(f"Error: {song.name}, {";".join(song.artists)}, {song_categories}")
                 break
 
-    # app = AuraTuneApp()
-    # app.mainloop()
+    app = AuraTuneApp()
+    app.mainloop()
